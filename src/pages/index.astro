@@ -1,0 +1,66 @@
+---
+import Header from "../components/Header.astro";
+import MarqueeBanner from "../components/MarqueeBanner.astro";
+import Hero from "../components/Hero.astro";
+import Intro from "../components/Intro.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import ProjectDetailOverlay from "../components/ProjectDetailOverlay.astro";
+import AboutMosaic from "../components/AboutMosaic.astro";
+import Footer from "../components/Footer.astro";
+import CustomCursor from "../components/CustomCursor.astro";
+import { site } from "../data/site";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={site.description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{site.title}</title>
+
+    <link rel="icon" href="/favicon.png" type="image/png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={site.title} />
+    <meta property="og:description" content={site.description} />
+    <meta property="og:url" content="https://www.jeremy-stokes.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={site.title} />
+    <meta name="twitter:description" content={site.description} />
+
+    <script
+      async
+      src={`https://www.googletagmanager.com/gtag/js?id=${site.gaId}`}
+    ></script>
+    <script define:vars={{ gaId: site.gaId }} is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", gaId);
+    </script>
+  </head>
+  <body id="top">
+    <CustomCursor />
+    <div class="page-shell">
+      <div class="page-frame">
+        <Header />
+        <main>
+          <MarqueeBanner items={site.nameItems} label="Name" heading />
+          <Hero />
+          <Intro />
+          <MarqueeBanner items={site.workItems} label="Work" />
+          <ProjectGrid />
+          <MarqueeBanner items={site.aboutItems} label="About" />
+          <AboutMosaic />
+          <Footer />
+        </main>
+      </div>
+    </div>
+    <ProjectDetailOverlay />
+  </body>
+</html>

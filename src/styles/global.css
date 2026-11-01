@@ -1,0 +1,150 @@
+/* Swear Display — Black Cilati (OH no Type Co. licensed) */
+@font-face {
+  font-family: "Swear Display Cilati";
+  src:
+    url("/fonts/SwearDisplay-BlackCilati.woff2") format("woff2"),
+    url("/fonts/SwearDisplay-BlackCilati.woff") format("woff");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* Swear Text Demo — Medium / Bold (synthetic bold when only Medium ships) */
+@font-face {
+  font-family: "Swear Text";
+  src: url("/fonts/swear-2.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Swear Text";
+  src: url("/fonts/swear-2.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Swear Text Demo — Medium Cilati (still demo until licensed) */
+@font-face {
+  font-family: "Swear Text Cilati";
+  src: url("/fonts/swear-1.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Swear Display";
+  src: url("/fonts/swear-3.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --lime: #c6eb09;
+  --ink: #050505;
+  --black: #050505;
+  --white: #ffffff;
+  --bolt: #f6d85f;
+  --border-w: 2px;
+  --border: var(--border-w) solid var(--ink);
+  --inset: 32px;
+  --header-h: 72px;
+  --content-pad: 40px;
+
+  /* Figma type families */
+  --font-display: "Swear Display Cilati", "Times New Roman", serif;
+  --font-text: "Swear Text", "Times New Roman", serif;
+  --font-text-cilati: "Swear Text Cilati", "Swear Display Cilati", Georgia, serif;
+
+  /* Figma type sizes (desktop max) */
+  --text-nav: clamp(1.25rem, 2.8vw, 2.5rem); /* 40px */
+  --text-banner: clamp(3rem, 13.9vw, 12.5rem); /* 200px */
+  --text-intro: clamp(1.5rem, 4.5vw, 4rem); /* 64px */
+  --text-project: clamp(2.5rem, 7vw, 6.25rem); /* 100px */
+  --text-quote: clamp(1.75rem, 3.9vw, 3.5rem); /* 56px */
+  --text-subquote: clamp(1.25rem, 2.8vw, 2.5rem); /* 40px */
+  --tracking-body: 0.02em; /* 1.28px at 64px ≈ 0.02em */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--lime);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-weight: 500;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.page-shell {
+  display: flex;
+  justify-content: center;
+  padding: var(--inset);
+  overflow-x: clip;
+}
+
+.page-frame {
+  width: min(100%, 1376px);
+  display: flex;
+  flex-direction: column;
+  border: var(--border);
+  background: var(--lime);
+}
+
+.band {
+  border-bottom: var(--border);
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --inset: 16px;
+    --content-pad: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

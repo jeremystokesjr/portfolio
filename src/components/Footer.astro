@@ -1,0 +1,54 @@
+---
+import { site } from "../data/site";
+import MarqueeBanner from "./MarqueeBanner.astro";
+---
+
+<footer class="footer">
+  <MarqueeBanner
+    items={site.footer.headingItems}
+    label="Footer"
+    variant="ink"
+  />
+  <div class="footer__body-wrap">
+    <p class="footer__body">
+      {site.footer.beforeLink}<a class="footer__link" href={`mailto:${site.email}`}
+        >{site.footer.linkText}</a
+      >{site.footer.afterLink}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    width: 100%;
+    background: var(--ink);
+    color: var(--lime);
+  }
+
+  .footer__body-wrap {
+    padding: 0 var(--content-pad) clamp(2rem, 4vw, 2.5rem);
+    background: var(--ink);
+  }
+
+  .footer__body {
+    margin: 0;
+    font-family: var(--font-text);
+    font-style: normal;
+    font-weight: 700;
+    font-size: var(--text-intro);
+    line-height: 1.25;
+    letter-spacing: var(--tracking-body);
+    color: var(--lime);
+  }
+
+  .footer__link {
+    color: var(--lime);
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .footer__link:hover,
+  .footer__link:focus-visible {
+    opacity: 0.85;
+  }
+</style>

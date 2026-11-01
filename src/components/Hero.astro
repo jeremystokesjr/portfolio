@@ -1,0 +1,371 @@
+---
+---
+
+<section class="hero band" aria-label="Portrait collage">
+  <div class="hero__stage" data-hero-stage>
+    <div class="hero__waves" aria-hidden="true"></div>
+
+    <!--
+      Figma 2:8952 — frame 1376 × 840
+      Each photo: AABB wrapper + centered media 1068.292 × 712.525
+    -->
+    <div
+      class="hero__photo hero__photo--1"
+      style="--ox: -4%; --oy: -3%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__photo-rot">
+          <div class="hero__photo-media">
+            <img src="/images/figma/hero-portrait-a.png" alt="" width="1920" height="1280" />
+            <img src="/images/figma/hero-portrait-b.png" alt="" width="1920" height="1280" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__photo hero__photo--2"
+      style="--ox: 5%; --oy: -4%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__photo-rot">
+          <div class="hero__photo-media">
+            <img src="/images/figma/hero-portrait-a.png" alt="" width="1920" height="1280" />
+            <img src="/images/figma/hero-portrait-b.png" alt="" width="1920" height="1280" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__photo hero__photo--3"
+      style="--ox: 2%; --oy: 5%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__photo-rot">
+          <div class="hero__photo-media">
+            <img src="/images/figma/hero-portrait-a.png" alt="" width="1920" height="1280" />
+            <img src="/images/figma/hero-portrait-b.png" alt="" width="1920" height="1280" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__photo hero__photo--4"
+      style="--ox: -2%; --oy: -6%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__photo-rot">
+          <div class="hero__photo-media">
+            <img src="/images/figma/hero-portrait-a.png" alt="" width="1920" height="1280" />
+            <img src="/images/figma/hero-portrait-b.png" alt="" width="1920" height="1280" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__bolt hero__bolt--1"
+      style="--ox: -2%; --oy: -2%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__bolt-rot">
+          <img src="/icons/bolt-yellow.svg" alt="" width="117" height="248" />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__bolt hero__bolt--2"
+      style="--ox: 3%; --oy: 2%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__bolt-rot">
+          <img src="/icons/bolt-yellow.svg" alt="" width="117" height="248" />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hero__bolt hero__bolt--3"
+      style="--ox: -2%; --oy: 3%;"
+      aria-hidden="true"
+    >
+      <div class="hero__motion" data-hero-motion>
+        <div class="hero__bolt-rot hero__bolt-rot--3">
+          <img src="/icons/bolt-yellow-2.svg" alt="" width="117" height="248" />
+        </div>
+      </div>
+    </div>
+
+    <span class="visually-hidden"
+      >Halftone portrait collage of Jeremy Stokes with lightning accents</span
+    >
+  </div>
+</section>
+
+<script>
+  function initHeroScroll() {
+    const stage = document.querySelector("[data-hero-stage]");
+    if (!(stage instanceof HTMLElement)) return;
+
+    // Avoid duplicate listeners on soft navigations
+    if (stage.dataset.scrollBound === "1") {
+      stage.dispatchEvent(new Event("heroscroll"));
+      return;
+    }
+    stage.dataset.scrollBound = "1";
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) {
+      stage.style.setProperty("--in", "1");
+      return;
+    }
+
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      const rect = stage.getBoundingClientRect();
+      const viewH = window.innerHeight || 1;
+      // Slightly out on first paint; settle into Figma positions as the hero rises
+      const start = viewH * 0.5;
+      const end = viewH * 0.08;
+      const progress = Math.min(
+        1,
+        Math.max(0, (start - rect.top) / (start - end || 1)),
+      );
+      stage.style.setProperty("--in", progress.toFixed(4));
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    stage.addEventListener("heroscroll", update);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+  }
+
+  initHeroScroll();
+  document.addEventListener("astro:page-load", initHeroScroll);
+</script>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hero {
+    padding: 0;
+  }
+
+  .hero__stage {
+    /* Approximate first-paint progress before JS runs */
+    --in: 0.35;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1376 / 840;
+    overflow: hidden;
+    background: var(--lime);
+  }
+
+  /* Figma Vector 9:10861 — tile pitch 356.7 × 23.12 */
+  .hero__waves {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/images/figma/wave-vector.svg");
+    background-size: 356.7px 23.12px;
+    background-repeat: repeat;
+    background-position: 0 0;
+    pointer-events: none;
+  }
+
+  .hero__motion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(
+      calc(var(--ox, 0%) * (1 - var(--in, 1))),
+      calc(var(--oy, 0%) * (1 - var(--in, 1))),
+      0
+    );
+    will-change: transform;
+  }
+
+  /*
+    AABB wrappers from Figma rotated groups — flex-center the media,
+    then rotate so geometry matches Dev Mode.
+  */
+  .hero__photo {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .hero__photo-rot {
+    flex: none;
+    width: calc(100% * 1068.292 / var(--aabb-w));
+    aspect-ratio: 1068.292 / 712.525;
+  }
+
+  .hero__photo-media {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__photo-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  /* 2:9099 — left -427, top -235, 1274.112 × 1237.763, rotate 40.86° */
+  .hero__photo--1 {
+    --aabb-w: 1274.112;
+    left: -31.032%;
+    top: -27.976%;
+    width: 92.595%;
+    height: 147.353%;
+  }
+
+  .hero__photo--1 .hero__photo-rot {
+    transform: rotate(40.86deg);
+  }
+
+  /* 2:9100 — left 620.77, top -312.18, 998.578 × 1232.121, rotate -72.66° */
+  .hero__photo--2 {
+    --aabb-w: 998.578;
+    left: 45.114%;
+    top: -37.164%;
+    width: 72.571%;
+    height: 146.681%;
+  }
+
+  .hero__photo--2 .hero__photo-rot {
+    transform: rotate(-72.66deg);
+  }
+
+  /* 2:9101 — left 108, top 200, 1240.095 × 1016.838, rotate 18.66° */
+  .hero__photo--3 {
+    --aabb-w: 1240.095;
+    left: 7.849%;
+    top: 23.81%;
+    width: 90.123%;
+    height: 121.052%;
+  }
+
+  .hero__photo--3 .hero__photo-rot {
+    transform: rotate(18.66deg);
+  }
+
+  /* 2:9102 — left 45.33, top -542.19, 1281.431 × 1151.211, rotate 150° */
+  .hero__photo--4 {
+    --aabb-w: 1281.431;
+    left: 3.294%;
+    top: -64.546%;
+    width: 93.127%;
+    height: 137.049%;
+  }
+
+  .hero__photo--4 .hero__photo-rot {
+    transform: rotate(150deg);
+  }
+
+  /* Bolts — AABB wrappers, media 117.419 × 248.26 */
+  .hero__bolt {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .hero__bolt-rot {
+    flex: none;
+    width: calc(100% * 117.419 / var(--bolt-aabb-w));
+    aspect-ratio: 117.419 / 248.26;
+    transform: rotate(10.84deg);
+  }
+
+  .hero__bolt-rot--3 {
+    transform: rotate(-68.13deg);
+  }
+
+  .hero__bolt img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+
+  /* 2:9103 — left 210.74, top 66.92, 161.996 × 265.907 */
+  .hero__bolt--1 {
+    --bolt-aabb-w: 161.996;
+    left: 15.316%;
+    top: 7.967%;
+    width: 11.773%;
+    height: 31.656%;
+  }
+
+  /* 2:9106 — left 1120.74, top 536.92, 161.996 × 265.907 */
+  .hero__bolt--2 {
+    --bolt-aabb-w: 161.996;
+    left: 81.449%;
+    top: 63.919%;
+    width: 11.773%;
+    height: 31.656%;
+  }
+
+  /* 2:9109 — left 244.67, top 699.15, 274.131 × 201.444 */
+  .hero__bolt--3 {
+    --bolt-aabb-w: 274.131;
+    left: 17.781%;
+    top: 83.232%;
+    width: 19.922%;
+    height: 23.981%;
+  }
+
+  @media (max-width: 700px) {
+    .hero__stage {
+      aspect-ratio: 1376 / 900;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__motion {
+      transform: none;
+    }
+  }
+</style>

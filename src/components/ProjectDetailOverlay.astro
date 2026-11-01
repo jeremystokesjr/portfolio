@@ -1,0 +1,833 @@
+---
+import { projects } from "../data/projects";
+---
+
+<!--
+  Figma Detail page 2:10348, placed in Overflow 2:10296.
+  Sheet is NOT full viewport height: top gap (~561/2456 ≈ 22.8dvh)
+  leaves a clickable dimmed home peek; sheet is full-bleed and flush
+  to the bottom. Zig-zag edge, then lime page (32px inset) / 1376 frame.
+  Title band scrolls like the homepage MarqueeBanner.
+  Footer 2:10773 — prev/next project arrows (not DOWNLOAD).
+-->
+<dialog class="detail" data-project-detail aria-labelledby="detail-title">
+  <!-- Hit target for the top gap (and any uncovered area); dims via ::backdrop -->
+  <div class="detail__scrim" data-detail-close tabindex="-1" aria-label="Close project detail"></div>
+
+  <div
+    class="detail__sheet"
+    role="document"
+    tabindex="-1"
+    data-detail-sheet
+    autofocus
+  >
+    <!-- Figma 2:10300 — lime subtract / ripped top edge (notches show dark scrim) -->
+    <div class="detail__edge" aria-hidden="true">
+      <svg
+        class="detail__edge-svg"
+        viewBox="0 0 1440 36"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M74.208 18.25L84.7451 0H131.671L142.208 18.25L152.745 0H199.671L210.208 18.25L220.745 0H267.671L278.208 18.25L288.745 0H335.671L346.208 18.25L356.745 0H403.671L414.208 18.25L424.745 0H471.671L482.208 18.25L492.745 0H539.671L550.208 18.25L560.745 0H607.671L618.208 18.25L628.745 0H675.671L686.208 18.25L696.745 0H743.671L754.208 18.25L764.745 0H811.671L822.208 18.25L832.745 0H879.671L890.208 18.25L900.745 0H947.671L958.208 18.25L968.745 0H1015.67L1026.21 18.25L1036.75 0H1083.67L1094.21 18.25L1104.75 0H1151.67L1162.21 18.25L1172.75 0H1219.67L1230.21 18.25L1240.75 0H1287.67L1298.21 18.25L1308.75 0H1355.67L1366.21 18.25L1376.75 0H1440V36H0V0H63.6709L74.208 18.25Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+    </div>
+
+    <div class="detail__page" data-detail-page>
+      <div class="detail__viewport" data-detail-viewport>
+        <div class="detail__frame" data-detail-slide>
+          <!-- Title marquee — same scroll as homepage MarqueeBanner, inside frame 2:10325 -->
+          <header class="detail__band detail__band--title">
+            <h2 class="visually-hidden" id="detail-title" data-detail-title></h2>
+            <div class="detail__marquee" aria-hidden="true">
+              <div class="detail__marquee-track">
+                <div class="detail__marquee-group" data-detail-marquee-group></div>
+                <div class="detail__marquee-group" data-detail-marquee-group></div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Meta — Frame 2:10430 (120px) -->
+          <div class="detail__band detail__band--meta">
+            <p class="detail__meta" data-detail-meta></p>
+          </div>
+
+          <!-- Introduction image — 2:10327 -->
+          <div class="detail__band detail__band--media">
+            <div class="detail__media">
+              <img
+                data-detail-image
+                src=""
+                alt=""
+                width="1296"
+                height="659"
+              />
+            </div>
+          </div>
+
+          <!-- Details — 2:10328 story 933 / impact 443 -->
+          <div class="detail__cols">
+            <section class="detail__section detail__section--story">
+              <h3 class="detail__heading">THE STORY</h3>
+              <div class="detail__rule" aria-hidden="true"></div>
+              <p class="detail__body" data-detail-story></p>
+            </section>
+            <section class="detail__section detail__section--impact">
+              <h3 class="detail__heading">IMPACT</h3>
+              <div class="detail__rule" aria-hidden="true"></div>
+              <p class="detail__body" data-detail-impact></p>
+            </section>
+          </div>
+
+          <!-- Prev / next — Figma 2:10773 / 18:11003 -->
+          <div class="detail__band detail__band--nav">
+            <div class="detail__nav">
+              <button
+                type="button"
+                class="detail__nav-btn"
+                data-detail-prev
+                aria-label="Previous project"
+              >
+                <img
+                  class="detail__nav-icon"
+                  src="/icons/arrow-prev.svg"
+                  alt=""
+                  width="140"
+                  height="53"
+                  decoding="async"
+                />
+              </button>
+              <button
+                type="button"
+                class="detail__nav-btn"
+                data-detail-next
+                aria-label="Next project"
+              >
+                <img
+                  class="detail__nav-icon"
+                  src="/icons/arrow-next.svg"
+                  alt=""
+                  width="140"
+                  height="53"
+                  decoding="async"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script define:vars={{ projects }}>
+  const projectIds = projects.map((p) => p.id);
+  const detailById = Object.fromEntries(
+    projects.map((p) => [p.id, { ...p.detail, id: p.id }]),
+  );
+
+  const SPRING = "cubic-bezier(0.22, 1.2, 0.36, 1)";
+  const SLIDE_MS = 560;
+
+  function initProjectDetail() {
+    const dialog = document.querySelector("[data-project-detail]");
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    if (dialog.dataset.bound === "1") return;
+    dialog.dataset.bound = "1";
+
+    const pageEl = dialog.querySelector("[data-detail-page]");
+    const viewportEl = dialog.querySelector("[data-detail-viewport]");
+    const sheetEl = dialog.querySelector("[data-detail-sheet]");
+
+    let slideEl = dialog.querySelector("[data-detail-slide]");
+    let lastFocus = null;
+    let currentId = null;
+    let animating = false;
+
+    const pinToTop = () => {
+      if (pageEl instanceof HTMLElement) pageEl.scrollTop = 0;
+    };
+
+    const prefersReducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const slideRefs = (root) => {
+      if (!(root instanceof Element)) {
+        return {
+          titleEl: null,
+          marqueeGroups: [],
+          metaEl: null,
+          imageEl: null,
+          storyEl: null,
+          impactEl: null,
+          prevBtn: null,
+          nextBtn: null,
+        };
+      }
+      return {
+        titleEl: root.querySelector("[data-detail-title]"),
+        marqueeGroups: root.querySelectorAll("[data-detail-marquee-group]"),
+        metaEl: root.querySelector("[data-detail-meta]"),
+        imageEl: root.querySelector("[data-detail-image]"),
+        storyEl: root.querySelector("[data-detail-story]"),
+        impactEl: root.querySelector("[data-detail-impact]"),
+        prevBtn: root.querySelector("[data-detail-prev]"),
+        nextBtn: root.querySelector("[data-detail-next]"),
+      };
+    };
+
+    const fillMarquee = (groups, title) => {
+      groups.forEach((group) => {
+        group.replaceChildren();
+        for (let i = 0; i < 8; i += 1) {
+          const span = document.createElement("span");
+          span.className = "detail__marquee-item";
+          span.textContent = title;
+          group.appendChild(span);
+        }
+      });
+    };
+
+    const fillRichText = (el, value) => {
+      if (!(el instanceof HTMLElement)) return;
+      el.replaceChildren();
+      if (typeof value === "string") {
+        el.textContent = value;
+        return;
+      }
+      if (!Array.isArray(value)) return;
+      for (const part of value) {
+        if (!part || typeof part !== "object") continue;
+        if (part.type === "link" && typeof part.href === "string") {
+          const a = document.createElement("a");
+          a.className = "detail__body-link";
+          a.href = part.href;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = part.text ?? "";
+          el.appendChild(a);
+        } else {
+          el.appendChild(document.createTextNode(part.text ?? ""));
+        }
+      }
+    };
+
+    const fill = (root, detail) => {
+      const refs = slideRefs(root);
+      if (refs.titleEl) refs.titleEl.textContent = detail.title;
+      fillMarquee(refs.marqueeGroups, detail.title);
+      if (refs.metaEl) refs.metaEl.textContent = detail.meta;
+      fillRichText(refs.storyEl, detail.story);
+      fillRichText(refs.impactEl, detail.impact);
+      if (refs.imageEl instanceof HTMLImageElement) {
+        refs.imageEl.src = detail.image;
+        refs.imageEl.alt = detail.imageAlt;
+      }
+    };
+
+    const neighborId = (dir) => {
+      if (!currentId || projectIds.length === 0) return null;
+      const idx = projectIds.indexOf(currentId);
+      if (idx < 0) return null;
+      const next =
+        (idx + dir + projectIds.length * 10) % projectIds.length;
+      return projectIds[next];
+    };
+
+    const bindNav = (root) => {
+      const { prevBtn, nextBtn } = slideRefs(root);
+      if (prevBtn instanceof HTMLButtonElement) {
+        prevBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          go(-1);
+        });
+      }
+      if (nextBtn instanceof HTMLButtonElement) {
+        nextBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          go(1);
+        });
+      }
+    };
+
+    const go = async (dir) => {
+      if (animating || !currentId) return;
+      if (!(viewportEl instanceof HTMLElement)) return;
+      if (!(slideEl instanceof HTMLElement)) return;
+
+      const nextId = neighborId(dir);
+      const detail = nextId ? detailById[nextId] : null;
+      if (!detail || !nextId) return;
+
+      if (prefersReducedMotion()) {
+        currentId = nextId;
+        fill(slideEl, detail);
+        pinToTop();
+        return;
+      }
+
+      animating = true;
+      dialog.dataset.sliding = "1";
+
+      const outgoing = slideEl;
+      const incoming = outgoing.cloneNode(true);
+      if (!(incoming instanceof HTMLElement)) {
+        animating = false;
+        delete dialog.dataset.sliding;
+        return;
+      }
+
+      // Avoid duplicate id while both slides exist
+      const incomingTitle = incoming.querySelector("[data-detail-title]");
+      if (incomingTitle) incomingTitle.removeAttribute("id");
+
+      fill(incoming, detail);
+      bindNav(incoming);
+
+      const outX = dir > 0 ? "-100%" : "100%";
+      const inX = dir > 0 ? "100%" : "-100%";
+
+      viewportEl.style.minHeight = `${outgoing.offsetHeight}px`;
+      outgoing.classList.add("detail__frame--leaving");
+      incoming.classList.add("detail__frame--entering");
+      incoming.style.transform = `translate3d(${inX}, 0, 0)`;
+      viewportEl.appendChild(incoming);
+
+      // Force layout before animating
+      incoming.getBoundingClientRect();
+
+      try {
+        await Promise.all([
+          outgoing.animate(
+            [
+              { transform: "translate3d(0, 0, 0)" },
+              { transform: `translate3d(${outX}, 0, 0)` },
+            ],
+            { duration: SLIDE_MS, easing: SPRING, fill: "forwards" },
+          ).finished,
+          incoming.animate(
+            [
+              { transform: `translate3d(${inX}, 0, 0)` },
+              { transform: "translate3d(0, 0, 0)" },
+            ],
+            { duration: SLIDE_MS, easing: SPRING, fill: "forwards" },
+          ).finished,
+        ]);
+      } catch {
+        // Animation interrupted (e.g. dialog closed mid-slide)
+      }
+
+      outgoing.remove();
+      incoming.getAnimations().forEach((a) => a.cancel());
+      incoming.style.transform = "";
+      incoming.classList.remove("detail__frame--entering");
+      if (incomingTitle) incomingTitle.id = "detail-title";
+
+      slideEl = incoming;
+      currentId = nextId;
+      viewportEl.style.minHeight = "";
+      pinToTop();
+      animating = false;
+      delete dialog.dataset.sliding;
+    };
+
+    const open = (id) => {
+      const detail = detailById[id];
+      if (!detail) return;
+      if (!(slideEl instanceof HTMLElement)) return;
+
+      currentId = id;
+      fill(slideEl, detail);
+      pinToTop();
+      lastFocus = document.activeElement;
+      const scrollY = window.scrollY;
+      document.documentElement.classList.add("detail-open");
+      dialog.showModal();
+      // showModal may autofocus the first tabbable control and scroll to it.
+      // Put focus on the sheet and pin to the top.
+      window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
+      pinToTop();
+      if (sheetEl instanceof HTMLElement) sheetEl.focus({ preventScroll: true });
+      pinToTop();
+      requestAnimationFrame(() => {
+        pinToTop();
+        dialog.classList.add("is-open");
+      });
+    };
+
+    const close = () => {
+      dialog.classList.remove("is-open");
+      document.documentElement.classList.remove("detail-open");
+      const finish = () => {
+        if (dialog.open) dialog.close();
+        if (lastFocus instanceof HTMLElement) lastFocus.focus();
+      };
+      if (prefersReducedMotion()) {
+        finish();
+        return;
+      }
+      // Match .detail__sheet slide transition (~0.4s)
+      window.setTimeout(finish, 400);
+    };
+
+    if (slideEl instanceof HTMLElement) bindNav(slideEl);
+
+    document.querySelectorAll("[data-open-project]").forEach((el) => {
+      el.addEventListener("click", (event) => {
+        event.preventDefault();
+        const id = el.getAttribute("data-open-project");
+        if (id) open(id);
+      });
+    });
+
+    dialog.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target === dialog || target.closest("[data-detail-close]")) {
+        event.preventDefault();
+        close();
+      }
+    });
+
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      close();
+    });
+
+    dialog.addEventListener("keydown", (event) => {
+      if (!dialog.open || animating) return;
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        go(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        go(1);
+      }
+    });
+  }
+
+  initProjectDetail();
+  document.addEventListener("astro:page-load", initProjectDetail);
+</script>
+
+<style is:global>
+  html.detail-open,
+  html.detail-open body {
+    overflow: hidden;
+  }
+</style>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .detail {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+    z-index: 10000;
+  }
+
+  .detail[open] {
+    display: block;
+  }
+
+  .detail::backdrop {
+    background: rgba(5, 5, 5, 0.6);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .detail.is-open::backdrop {
+    opacity: 1;
+  }
+
+  .detail__scrim {
+    position: fixed;
+    inset: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  /*
+    Full-bleed sheet pinned to the viewport bottom (Figma Overflow 2:10296).
+    Detail page sits at y=561 on the 1440×2456 artboard → ~22.8% top gap
+    so the dimmed homepage remains visible and clickable to close.
+
+    Entrance: slide up from below into the top-gap layout.
+  */
+  .detail__sheet {
+    --detail-top-gap: clamp(4.5rem, 22.8dvh, 35rem); /* 561px @ tall artboard */
+    position: fixed;
+    top: var(--detail-top-gap);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    overflow: hidden;
+    transform: translate3d(0, 100%, 0);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    z-index: 1;
+    outline: none;
+    pointer-events: auto;
+  }
+
+  .detail.is-open .detail__sheet {
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* 2:10300 — ripped edge: lime zig-zag, transparent notches show scrim */
+  .detail__edge {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    width: 100%;
+    height: 36px;
+    line-height: 0;
+    margin-bottom: -1px;
+    color: var(--lime);
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .detail__edge-svg {
+    display: block;
+    width: 100%;
+    height: 36px;
+    overflow: visible;
+  }
+
+  /* 2:10323 Page — lime body under the rip, 32px inset */
+  .detail__page {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: auto;
+    background: var(--lime);
+    padding: var(--inset);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Stage for spring slide between projects */
+  .detail__viewport {
+    position: relative;
+    width: min(100%, 1376px);
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  /* 2:10324 — 1376 content column */
+  .detail__frame {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--lime);
+    will-change: transform;
+  }
+
+  .detail__frame--leaving {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .detail__frame--entering {
+    position: relative;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .detail__band {
+    width: 100%;
+    border-left: var(--border);
+    border-right: var(--border);
+    border-top: var(--border);
+  }
+
+  /* 2:10325 — 202px title band. Track scrolls like homepage MarqueeBanner. */
+  .detail__band--title {
+    height: clamp(120px, 14vw, 202px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .detail__marquee {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .detail__marquee-track {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: max-content;
+    will-change: transform;
+    animation: detail-marquee-scroll 45s linear infinite;
+  }
+
+  .detail__marquee-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* Items are created in JS, so they do not receive the Astro scope attribute. */
+  :global(.detail__marquee-item) {
+    display: inline-block;
+    flex: 0 0 auto;
+    margin: 0;
+    padding-right: 100pt;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 900;
+    font-size: var(--text-banner);
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  @keyframes detail-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* 2:10430 — meta */
+  .detail__band--meta {
+    height: clamp(72px, 8.7vw, 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(1rem, 2vw, 2.5rem);
+    overflow: hidden;
+  }
+
+  .detail__meta {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--text-intro); /* 64px */
+    line-height: normal;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  /* 2:10327 Introduction */
+  .detail__band--media {
+    padding: var(--content-pad);
+  }
+
+  .detail__media {
+    position: relative;
+    width: 100%;
+    height: clamp(280px, 47.9vw, 659px);
+    overflow: hidden;
+    background: #0b3d2e;
+  }
+
+  .detail__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    max-width: none;
+  }
+
+  /*
+    2:10328 Details — 933 / 443.
+    Figma: wrapper draws the bottom stroke; children draw the top/sides.
+    That bottom stroke is the single shared line above the nav (2:10773
+    has no top border). Do not also put border-top on .detail__band--nav.
+  */
+  .detail__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 933fr) minmax(0, 443fr);
+    border-left: var(--border);
+    border-right: var(--border);
+    border-top: var(--border);
+    border-bottom: var(--border);
+  }
+
+  .detail__section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: var(--content-pad);
+    min-height: clamp(280px, 32.7vw, 450px);
+  }
+
+  .detail__section--story {
+    border-right: var(--border);
+  }
+
+  /* Swear Display Black Italic — closest available: display + italic */
+  .detail__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: var(--text-project); /* 100px */
+    line-height: 1;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  .detail__rule {
+    width: 100%;
+    height: 2px;
+    background: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .detail__body {
+    margin: 0;
+    font-family: var(--font-text);
+    font-weight: 700;
+    font-size: clamp(1.125rem, 2.5vw, 2.25rem); /* 36px */
+    line-height: 1.15;
+    letter-spacing: 0.02em; /* 0.72px @ 36px */
+    text-align: justify;
+    color: var(--ink);
+  }
+
+  /* Anchors are created in JS, so they do not receive the Astro scope attribute. */
+  :global(.detail__body-link) {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  :global(.detail__body-link:hover),
+  :global(.detail__body-link:focus-visible) {
+    text-decoration-thickness: 2px;
+  }
+
+  /* 2:10773 — prev/next arrows. Sides + bottom only (no top). */
+  .detail__band.detail__band--nav {
+    border-top: none;
+    border-bottom: var(--border);
+    height: clamp(72px, 8.7vw, 120px);
+    min-height: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .detail__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 clamp(1.5rem, 4.4vw, 4rem);
+  }
+
+  .detail__nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0.35rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .detail__nav-btn:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  .detail__nav-icon {
+    display: block;
+    /* Intrinsic 140×53 from SVG; do not stretch to 100% */
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .detail__cols {
+      grid-template-columns: 1fr;
+    }
+
+    .detail__section--story {
+      border-right: none;
+      border-bottom: var(--border);
+    }
+
+    .detail__section {
+      min-height: 0;
+    }
+
+    .detail__media {
+      height: auto;
+      aspect-ratio: 1296 / 659;
+    }
+
+    .detail__nav {
+      padding: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .detail__sheet {
+      transform: none;
+      transition: none;
+    }
+
+    .detail.is-open .detail__sheet {
+      transform: none;
+    }
+
+    .detail::backdrop {
+      transition: none;
+    }
+
+    .detail__marquee-track {
+      animation: none;
+    }
+  }
+</style>

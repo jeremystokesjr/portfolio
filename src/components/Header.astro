@@ -1,0 +1,43 @@
+---
+import { site } from "../data/site";
+---
+
+<header class="nav band">
+  <a class="nav__email" href={`mailto:${site.email}`}>{site.emailDisplay}</a>
+</header>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--header-h);
+    min-height: var(--header-h);
+    padding: 0 var(--content-pad);
+    background: var(--lime);
+  }
+
+  .nav__email {
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 900;
+    font-size: var(--text-nav);
+    line-height: 1.4;
+    letter-spacing: 0;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .nav__email:hover,
+  .nav__email:focus-visible {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 520px) {
+    .nav__email {
+      white-space: normal;
+      font-size: clamp(1rem, 5vw, 1.5rem);
+    }
+  }
+</style>

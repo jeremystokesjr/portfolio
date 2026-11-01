@@ -1,0 +1,50 @@
+---
+import { projects } from "../data/projects";
+import ProjectCell from "./ProjectCell.astro";
+
+const rows: (typeof projects)[] = [];
+for (let i = 0; i < projects.length; i += 2) {
+  rows.push(projects.slice(i, i + 2));
+}
+---
+
+<section class="work" aria-label="Selected work">
+  {
+    rows.map((row) => (
+      <div class="work__row band">
+        {row.map((project, i) => (
+          <div class:list={["work__col", { "work__col--divider": i === 0 }]}>
+            <ProjectCell project={project} />
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  .work {
+    width: 100%;
+  }
+
+  .work__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+
+  .work__col--divider {
+    border-right: var(--border);
+  }
+
+  @media (max-width: 900px) {
+    .work__row {
+      grid-template-columns: 1fr;
+    }
+
+    .work__col--divider {
+      border-right: none;
+      border-bottom: var(--border);
+    }
+  }
+</style>

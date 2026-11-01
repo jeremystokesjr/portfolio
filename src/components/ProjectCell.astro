@@ -1,0 +1,383 @@
+---
+import type { Project } from "../data/projects";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const titleLines = project.title.split("\n");
+const titleLabel = titleLines.join(" ");
+---
+
+<div class:list={["cell", `cell--${project.layout}`]}>
+  <button
+    type="button"
+    class="cell__hit"
+    data-open-project={project.id}
+    aria-haspopup="dialog"
+    aria-label={titleLabel}
+  ></button>
+  <div class:list={["cell__media", { "cell__media--video": project.video }]}>
+    {
+      project.video ? (
+        <>
+          <video
+            class="cell__video"
+            data-cell-video
+            data-webm={project.video}
+            data-hevc={project.videoSafari}
+            poster={project.image}
+            muted
+            playsinline
+            loop
+            preload="none"
+            width="720"
+            height="720"
+            aria-hidden="true"
+          ></video>
+          <div class="cell__video-veil" aria-hidden="true"></div>
+        </>
+      ) : (
+        <img
+          src={project.image}
+          alt={project.imageAlt}
+          width="674"
+          height="659"
+          loading="lazy"
+        />
+      )
+    }
+    <div class="cell__duotone" aria-hidden="true"></div>
+  </div>
+  <div class="cell__rule" aria-hidden="true"></div>
+  <h2 class="cell__title">
+    {
+      titleLines.map((line, i) => (
+        <>
+          {i > 0 && <br />}
+          {line}
+        </>
+      ))
+    }
+  </h2>
+</div>
+
+<style>
+  .cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: var(--content-pad);
+    min-height: clamp(420px, 70vw, 989px);
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: var(--lime);
+    background-color: var(--lime);
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    font: inherit;
+    position: relative;
+  }
+
+  .cell:hover,
+  .cell:focus-visible {
+    text-decoration: none;
+  }
+
+  .cell__hit {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    background-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .cell:focus-within {
+    outline: 3px solid var(--ink);
+    outline-offset: -3px;
+  }
+
+  .cell__hit:focus-visible {
+    outline: none;
+  }
+
+  .cell--title-first {
+    flex-direction: column-reverse;
+  }
+
+  .cell--title-first .cell__rule {
+    order: 0;
+  }
+
+  .cell__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 607 / 619;
+    overflow: hidden;
+    background: var(--lime);
+  }
+
+  .cell__media img,
+  .cell__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(1);
+    pointer-events: none;
+    transition:
+      filter 0.45s ease,
+      transform 0.45s ease;
+  }
+
+  .cell__duotone {
+    position: absolute;
+    inset: -8%;
+    background: var(--ink);
+    mix-blend-mode: color;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.45s ease;
+  }
+
+  .cell:hover .cell__media img,
+  .cell:focus-visible .cell__media img,
+  .cell:hover .cell__media video,
+  .cell:focus-visible .cell__media video {
+    filter: grayscale(0);
+    transform: scale(1.03);
+  }
+
+  /* Full frame of the prototype, including the device bezels */
+  .cell__media--video {
+    isolation: isolate;
+    width: min(100%, 720px);
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+    /* Black plate behind alpha video (and idle overlay) */
+    background: #050505;
+  }
+
+  .cell__media--video video {
+    position: relative;
+    z-index: 0;
+    object-fit: contain;
+    /* grayscale() flattens alpha onto black in Safari and some Chromium builds */
+    filter: none;
+    background: transparent;
+  }
+
+  /* Idle Color blend: keep luminosity, drop saturation (B&W). Lifts on hover. */
+  .cell__video-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: #050505;
+    mix-blend-mode: color;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  /* The duotone plate covers the whole frame and would tint the clear pixels. */
+  .cell__media--video .cell__duotone {
+    display: none;
+  }
+
+  .cell:hover .cell__media--video video,
+  .cell:focus-within .cell__media--video video {
+    filter: none;
+    transform: none;
+  }
+
+  /* Match JS hover play: only clear overlay on real hover (not sticky touch) */
+  @media (hover: hover) {
+    .cell:hover .cell__video-veil {
+      opacity: 0;
+    }
+  }
+
+  .cell:focus-within .cell__video-veil {
+    opacity: 0;
+  }
+
+  .cell:hover .cell__duotone,
+  .cell:focus-visible .cell__duotone {
+    opacity: 0;
+  }
+
+  .cell__rule {
+    width: 100%;
+    height: 2px;
+    background: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .cell__title {
+    margin: 0;
+    width: 100%;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 900;
+    font-size: var(--text-project);
+    line-height: 0.8;
+    letter-spacing: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cell__media img,
+    .cell__media video,
+    .cell__duotone,
+    .cell__video-veil {
+      transition: none;
+    }
+
+    .cell:hover .cell__media img,
+    .cell:focus-visible .cell__media img,
+    .cell:hover .cell__media video,
+    .cell:focus-visible .cell__media video {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cell {
+      gap: 24px;
+      min-height: 0;
+    }
+  }
+</style>
+
+<script>
+  let cellVideoObserver = null;
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function canHover() {
+    return window.matchMedia("(hover: hover)").matches;
+  }
+
+  function cellFromVideo(video) {
+    return video.closest(".cell");
+  }
+
+  function cellIsActive(cell) {
+    if (!(cell instanceof HTMLElement)) return false;
+    if (cell.matches(":focus-within")) return true;
+    // Avoid sticky-hover playback on touch devices
+    return canHover() && cell.matches(":hover");
+  }
+
+  function cellVideoShouldPlay(video) {
+    return (
+      cellIsActive(cellFromVideo(video)) &&
+      !document.documentElement.classList.contains("detail-open") &&
+      !prefersReducedMotion()
+    );
+  }
+
+  function syncCellVideo(video) {
+    if (!(video instanceof HTMLVideoElement)) return;
+    if (cellVideoShouldPlay(video)) {
+      attachAlphaSource(video);
+      video.play()?.catch(() => {});
+      return;
+    }
+    video.pause();
+    try {
+      if (video.currentTime !== 0) video.currentTime = 0;
+    } catch {
+      /* ignore before metadata */
+    }
+  }
+
+  function useHevcAlpha() {
+    const ua = navigator.userAgent;
+    return /Safari\//.test(ua) && !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Firefox/.test(ua);
+  }
+
+  function attachAlphaSource(video) {
+    if (video.dataset.alphaReady === "1") return;
+    const webm = video.dataset.webm;
+    const hevc = video.dataset.hevc;
+    const src = useHevcAlpha() && hevc ? hevc : webm;
+    if (!src) return;
+    video.dataset.alphaReady = "1";
+    video.src = src;
+  }
+
+  function bindCellInteraction(cell) {
+    if (!(cell instanceof HTMLElement) || cell.dataset.videoBound === "1") return;
+    if (!cell.querySelector("[data-cell-video]")) return;
+    cell.dataset.videoBound = "1";
+
+    const sync = () => {
+      const video = cell.querySelector("[data-cell-video]");
+      if (video instanceof HTMLVideoElement) syncCellVideo(video);
+    };
+
+    cell.addEventListener("pointerenter", sync);
+    cell.addEventListener("pointerleave", sync);
+    cell.addEventListener("focusin", sync);
+    cell.addEventListener("focusout", sync);
+  }
+
+  function initCellVideos() {
+    const videos = document.querySelectorAll("[data-cell-video]");
+    if (!videos.length) return;
+
+    if (!cellVideoObserver) {
+      // Prep sources near the viewport so hover can play promptly; never autoplay from visibility
+      cellVideoObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const video = entry.target;
+            if (!(video instanceof HTMLVideoElement)) continue;
+            if (entry.isIntersecting) attachAlphaSource(video);
+            syncCellVideo(video);
+          }
+        },
+        { threshold: 0.2, rootMargin: "80px" },
+      );
+
+      const sheet = new MutationObserver(() => {
+        document.querySelectorAll("[data-cell-video]").forEach((video) => {
+          syncCellVideo(video);
+        });
+      });
+      sheet.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
+    videos.forEach((video) => {
+      if (!(video instanceof HTMLVideoElement)) return;
+      const cell = video.closest(".cell");
+      if (cell) bindCellInteraction(cell);
+      if (video.dataset.observed === "1") return;
+      video.dataset.observed = "1";
+      cellVideoObserver.observe(video);
+    });
+  }
+
+  initCellVideos();
+  document.addEventListener("astro:page-load", initCellVideos);
+</script>

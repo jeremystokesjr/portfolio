@@ -1,0 +1,25 @@
+---
+import { site } from "../data/site";
+---
+
+<section class="intro band">
+  <p class="intro__text">{site.intro}</p>
+</section>
+
+<style>
+  .intro {
+    padding: var(--content-pad);
+  }
+
+  .intro__text {
+    margin: 0;
+    font-family: var(--font-text);
+    font-style: normal;
+    font-weight: 700;
+    font-size: var(--text-intro);
+    line-height: 1.25;
+    letter-spacing: var(--tracking-body);
+    text-align: justify;
+    text-wrap: pretty;
+  }
+</style>
