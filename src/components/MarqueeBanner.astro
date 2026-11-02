@@ -22,18 +22,19 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
 <section
   class:list={["marquee", "band", `marquee--${variant}`]}
   aria-label={label}
+  data-marquee
 >
   {heading && <h1 class="visually-hidden">{headingText}</h1>}
   <div class="marquee__viewport">
-    <div class="marquee__track">
-      <div class="marquee__group">
+    <div class="marquee__track" data-marquee-track>
+      <div class="marquee__group" data-marquee-group>
         {
           copies.map((item) => (
             <span class="marquee__item">{item}</span>
           ))
         }
       </div>
-      <div class="marquee__group" aria-hidden="true">
+      <div class="marquee__group" data-marquee-group aria-hidden="true">
         {
           copies.map((item) => (
             <span class="marquee__item">{item}</span>
@@ -43,6 +44,39 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
     </div>
   </div>
 </section>
+
+<script>
+  function syncMarquee(root: Element) {
+    if (!(root instanceof HTMLElement)) return;
+    const track = root.querySelector("[data-marquee-track]");
+    const group = root.querySelector("[data-marquee-group]");
+    if (!(track instanceof HTMLElement) || !(group instanceof HTMLElement)) return;
+
+    const width = group.getBoundingClientRect().width;
+    if (!width) return;
+
+    // Pixel distance avoids subpixel -50% seams that look like a hard cutoff.
+    track.style.setProperty("--marquee-distance", `${width}px`);
+    // Keep speed roughly stable across phrase lengths (~80px/s).
+    track.style.setProperty("--marquee-duration", `${Math.max(28, width / 80)}s`);
+  }
+
+  function syncAll() {
+    document.querySelectorAll("[data-marquee]").forEach(syncMarquee);
+  }
+
+  const ready = () => {
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(syncAll).catch(syncAll);
+    } else {
+      syncAll();
+    }
+  };
+
+  ready();
+  document.addEventListener("astro:page-load", ready);
+  window.addEventListener("resize", syncAll);
+</script>
 
 <style>
   .visually-hidden {
@@ -58,8 +92,13 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
   }
 
   .marquee {
+    /* Height must stay ahead of --text-banner. The old 12vw/208px band was
+       shorter than the type on mid-wide screens, so Cilati ascenders and
+       descenders clipped against overflow:hidden. */
+    --marquee-size: var(--text-banner);
+    --marquee-fade: clamp(2rem, 6vw, 5rem);
     position: relative;
-    min-height: clamp(100px, 12vw, 208px);
+    min-height: calc(var(--marquee-size) * 1.35);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -79,15 +118,32 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
   .marquee__viewport {
     width: 100%;
     overflow: hidden;
+    /* Soft edges so letters aren't hard-sliced by the frame border. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent 100%
+    );
   }
 
   .marquee__track {
+    --marquee-distance: 50%;
+    --marquee-duration: 45s;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     width: max-content;
     will-change: transform;
-    animation: marquee-scroll 45s linear infinite;
+    animation: marquee-scroll var(--marquee-duration) linear infinite;
   }
 
   .marquee__group {
@@ -102,13 +158,16 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
     display: inline-block;
     flex: 0 0 auto;
     margin: 0;
-    /* 100pt space after each string (Figma) */
-    padding-right: 100pt;
+    /* Side padding absorbs Cilati italic overhang between repeats. */
+    padding-left: 0.1em;
+    /* 100pt space after each string (Figma), plus overhang room */
+    padding-right: calc(100pt + 0.1em);
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 900;
-    font-size: var(--text-banner);
-    line-height: 1;
+    font-size: var(--marquee-size);
+    /* Extra leading keeps italic glyph ink inside the band. */
+    line-height: 1.35;
     letter-spacing: 0;
     white-space: nowrap;
   }
@@ -118,13 +177,28 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
       transform: translateX(0);
     }
     to {
-      transform: translateX(-50%);
+      transform: translateX(calc(-1 * var(--marquee-distance)));
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .marquee__track {
       animation: none;
+    }
+
+    .marquee__viewport {
+      -webkit-mask-image: linear-gradient(
+        to right,
+        #000 0,
+        #000 calc(100% - var(--marquee-fade)),
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        #000 0,
+        #000 calc(100% - var(--marquee-fade)),
+        transparent 100%
+      );
     }
   }
 </style>

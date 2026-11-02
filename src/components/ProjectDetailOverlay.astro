@@ -575,9 +575,11 @@ import { projects } from "../data/projects";
     border-top: var(--border);
   }
 
-  /* 2:10325 — 202px title band. Track scrolls like homepage MarqueeBanner. */
+  /* Title band — keep height ahead of --text-banner so Cilati ink isn't clipped. */
   .detail__band--title {
-    height: clamp(120px, 14vw, 202px);
+    --marquee-size: var(--text-banner);
+    --marquee-fade: clamp(2rem, 6vw, 5rem);
+    min-height: calc(var(--marquee-size) * 1.35);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -586,6 +588,20 @@ import { projects } from "../data/projects";
   .detail__marquee {
     width: 100%;
     overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent 100%
+    );
   }
 
   .detail__marquee-track {
@@ -610,12 +626,13 @@ import { projects } from "../data/projects";
     display: inline-block;
     flex: 0 0 auto;
     margin: 0;
-    padding-right: 100pt;
+    padding-left: 0.1em;
+    padding-right: calc(100pt + 0.1em);
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 900;
-    font-size: var(--text-banner);
-    line-height: 1;
+    font-size: var(--marquee-size);
+    line-height: 1.35;
     letter-spacing: 0;
     white-space: nowrap;
     color: var(--ink);
