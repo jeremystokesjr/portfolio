@@ -575,9 +575,10 @@ import { projects } from "../data/projects";
     border-top: var(--border);
   }
 
-  /* 2:10325 — 202px title band. Track scrolls like homepage MarqueeBanner. */
+  /* Title band — keep height ahead of --text-banner so Cilati ink isn't clipped. */
   .detail__band--title {
-    height: clamp(120px, 14vw, 202px);
+    --marquee-size: var(--text-banner);
+    min-height: calc(var(--marquee-size) * 1.35);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -614,8 +615,8 @@ import { projects } from "../data/projects";
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 900;
-    font-size: var(--text-banner);
-    line-height: 1;
+    font-size: var(--marquee-size);
+    line-height: 1.35;
     letter-spacing: 0;
     white-space: nowrap;
     color: var(--ink);

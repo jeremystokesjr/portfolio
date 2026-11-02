@@ -58,8 +58,12 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
   }
 
   .marquee {
+    /* Height must stay ahead of --text-banner. The old 12vw/208px band was
+       shorter than the type on mid-wide screens, so Cilati ascenders and
+       descenders clipped against overflow:hidden. */
+    --marquee-size: var(--text-banner);
     position: relative;
-    min-height: clamp(100px, 12vw, 208px);
+    min-height: calc(var(--marquee-size) * 1.35);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -107,8 +111,9 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 900;
-    font-size: var(--text-banner);
-    line-height: 1;
+    font-size: var(--marquee-size);
+    /* Extra leading keeps italic glyph ink inside the band. */
+    line-height: 1.35;
     letter-spacing: 0;
     white-space: nowrap;
   }
