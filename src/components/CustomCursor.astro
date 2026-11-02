@@ -10,132 +10,76 @@
   <svg
     class="custom-cursor__eye"
     viewBox="0 0 380 380"
-    width="68"
-    height="68"
+    width="72"
+    height="72"
     fill="none"
     aria-hidden="true"
   >
     <path
       class="eye-stroke"
-      d="M45 189.5C45 154.983 52.8612 123.783 65.5205 101.248C78.1976 78.681 95.5544 65 114.5 65C133.446 65 150.802 78.681 163.479 101.248C176.139 123.783 184 154.983 184 189.5C184 224.017 176.139 255.217 163.479 277.752C150.802 300.319 133.446 314 114.5 314C95.5544 314 78.1976 300.319 65.5205 277.752C52.8612 255.217 45 224.017 45 189.5Z"
-      fill="url(#eye-pattern-left)"
+      d="M190.5 99C234.96 99 275.261 109.159 304.481 125.636C333.671 142.095 352 164.989 352 190.5C352 216.011 333.671 238.905 304.481 255.364C275.261 271.841 234.96 282 190.5 282C146.04 282 105.739 271.841 76.5186 255.364C47.3288 238.905 29 216.011 29 190.5C29 164.989 47.3288 142.095 76.5186 125.636C105.739 109.159 146.04 99 190.5 99Z"
+      fill="url(#eye-pattern)"
     ></path>
-    <path
-      class="eye-iris"
-      d="M86 127C109.196 127 128 154.982 128 189.5C128 224.018 109.196 252 86 252C62.804 252 44 224.018 44 189.5C44 154.982 62.804 127 86 127Z"
-    ></path>
-    <mask id="eye-iris-left" fill="white">
+    <g class="eye-ball" data-eye-ball mask="url(#eye-opening)">
+      <use class="eye-iris" href="#eye-iris-shape"></use>
+      <mask id="eye-iris-stroke" fill="white">
+        <use href="#eye-iris-shape"></use>
+      </mask>
       <path
-        d="M86 127C109.196 127 128 154.982 128 189.5C128 224.018 109.196 252 86 252C62.804 252 44 224.018 44 189.5C44 154.982 62.804 127 86 127Z"
+        class="eye-stroke eye-stroke--inset"
+        d="M190 128C225.346 128 254 155.982 254 190.5C254 225.018 225.346 253 190 253C154.654 253 126 225.018 126 190.5C126 155.982 154.654 128 190 128Z"
+        mask="url(#eye-iris-stroke)"
       ></path>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M86 127C109.196 127 128 154.982 128 189.5C128 224.018 109.196 252 86 252C62.804 252 44 224.018 44 189.5C44 154.982 62.804 127 86 127Z"
-      mask="url(#eye-iris-left)"
-    ></path>
-    <path
-      class="eye-pupil"
-      d="M86 152C99.8071 152 111 168.789 111 189.5C111 210.211 99.8071 227 86 227C72.1929 227 61 210.211 61 189.5C61 168.789 72.1929 152 86 152Z"
-    ></path>
-    <mask id="eye-pupil-left" fill="white">
+      <use class="eye-pupil" href="#eye-pupil-shape"></use>
+      <mask id="eye-pupil-stroke" fill="white">
+        <use href="#eye-pupil-shape"></use>
+      </mask>
       <path
-        d="M86 152C99.8071 152 111 168.789 111 189.5C111 210.211 99.8071 227 86 227C72.1929 227 61 210.211 61 189.5C61 168.789 72.1929 152 86 152Z"
+        class="eye-stroke eye-stroke--inset"
+        d="M190 153C211.039 153 228.095 169.789 228.095 190.5C228.095 211.211 211.039 228 190 228C168.96 228 151.904 211.211 151.904 190.5C151.904 169.789 168.96 153 190 153Z"
+        mask="url(#eye-pupil-stroke)"
       ></path>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M86 152C99.8071 152 111 168.789 111 189.5C111 210.211 99.8071 227 86 227C72.1929 227 61 210.211 61 189.5C61 168.789 72.1929 152 86 152Z"
-      mask="url(#eye-pupil-left)"
-    ></path>
-    <use class="eye-glint" href="#eye-glint-left"></use>
-    <mask id="eye-glint-left-mask" fill="white">
-      <use href="#eye-glint-left"></use>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M79.4213 163.528C77.6701 170.063 71.4934 174.087 65.6253 172.514C59.7572 170.942 56.4198 164.369 58.171 157.834C59.9222 151.298 66.0989 147.275 71.967 148.847C77.8351 150.419 81.1725 156.992 79.4213 163.528Z"
-      mask="url(#eye-glint-left-mask)"
-    ></path>
-    <path
-      class="eye-stroke"
-      d="M195 189.5C195 154.983 202.861 123.783 215.52 101.248C228.198 78.681 245.554 65 264.5 65C283.446 65 300.802 78.681 313.479 101.248C326.139 123.783 334 154.983 334 189.5C334 224.017 326.139 255.217 313.479 277.752C300.802 300.319 283.446 314 264.5 314C245.554 314 228.198 300.319 215.521 277.752C202.861 255.217 195 224.017 195 189.5Z"
-      fill="url(#eye-pattern-right)"
-    ></path>
-    <use class="eye-iris" href="#eye-iris-right-shape"></use>
-    <mask id="eye-iris-right" fill="white">
-      <use href="#eye-iris-right-shape"></use>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M236 127C259.196 127 278 154.982 278 189.5C278 224.018 259.196 252 236 252C212.804 252 194 224.018 194 189.5C194 154.982 212.804 127 236 127Z"
-      mask="url(#eye-iris-right)"
-    ></path>
-    <use class="eye-pupil" href="#eye-pupil-right-shape"></use>
-    <mask id="eye-pupil-right" fill="white">
-      <use href="#eye-pupil-right-shape"></use>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M236 152C249.807 152 261 168.789 261 189.5C261 210.211 249.807 227 236 227C222.193 227 211 210.211 211 189.5C211 168.789 222.193 152 236 152Z"
-      mask="url(#eye-pupil-right)"
-    ></path>
-    <use class="eye-glint" href="#eye-glint-right"></use>
-    <mask id="eye-glint-right-mask" fill="white">
-      <use href="#eye-glint-right"></use>
-    </mask>
-    <path
-      class="eye-stroke eye-stroke--inset"
-      d="M229.421 163.528C227.67 170.063 221.493 174.087 215.625 172.514C209.757 170.942 206.42 164.369 208.171 157.834C209.922 151.298 216.099 147.275 221.967 148.847C227.835 150.419 231.173 156.992 229.421 163.528Z"
-      mask="url(#eye-glint-right-mask)"
-    ></path>
+      <use class="eye-glint" href="#eye-glint-shape"></use>
+      <mask id="eye-glint-stroke" fill="white">
+        <use href="#eye-glint-shape"></use>
+      </mask>
+      <path
+        class="eye-stroke eye-stroke--inset"
+        d="M179.976 164.528C177.307 171.063 167.895 175.087 158.953 173.514C150.011 171.942 144.926 165.369 147.594 158.834C150.263 152.298 159.675 148.275 168.617 149.847C177.558 151.419 182.644 157.992 179.976 164.528Z"
+        mask="url(#eye-glint-stroke)"
+      ></path>
+    </g>
     <defs>
       <path
-        id="eye-glint-left"
-        d="M79.4213 163.528C77.6701 170.063 71.4934 174.087 65.6253 172.514C59.7572 170.942 56.4198 164.369 58.171 157.834C59.9222 151.298 66.0989 147.275 71.967 148.847C77.8351 150.419 81.1725 156.992 79.4213 163.528Z"
+        id="eye-lid-shape"
+        d="M351 190.5C351 240.482 279.142 281 190.5 281C101.858 281 30 240.482 30 190.5C30 140.518 101.858 100 190.5 100C279.142 100 351 140.518 351 190.5Z"
       ></path>
       <path
-        id="eye-iris-right-shape"
-        d="M236 127C259.196 127 278 154.982 278 189.5C278 224.018 259.196 252 236 252C212.804 252 194 224.018 194 189.5C194 154.982 212.804 127 236 127Z"
+        id="eye-iris-shape"
+        d="M190 128C225.346 128 254 155.982 254 190.5C254 225.018 225.346 253 190 253C154.654 253 126 225.018 126 190.5C126 155.982 154.654 128 190 128Z"
       ></path>
       <path
-        id="eye-pupil-right-shape"
-        d="M236 152C249.807 152 261 168.789 261 189.5C261 210.211 249.807 227 236 227C222.193 227 211 210.211 211 189.5C211 168.789 222.193 152 236 152Z"
+        id="eye-pupil-shape"
+        d="M190 153C211.039 153 228.095 169.789 228.095 190.5C228.095 211.211 211.039 228 190 228C168.96 228 151.904 211.211 151.904 190.5C151.904 169.789 168.96 153 190 153Z"
       ></path>
       <path
-        id="eye-glint-right"
-        d="M229.421 163.528C227.67 170.063 221.493 174.087 215.625 172.514C209.757 170.942 206.42 164.369 208.171 157.834C209.922 151.298 216.099 147.275 221.967 148.847C227.835 150.419 231.173 156.992 229.421 163.528Z"
+        id="eye-glint-shape"
+        d="M179.976 164.528C177.307 171.063 167.895 175.087 158.953 173.514C150.011 171.942 144.926 165.369 147.594 158.834C150.263 152.298 159.675 148.275 168.617 149.847C177.558 151.419 182.644 157.992 179.976 164.528Z"
       ></path>
+      <mask id="eye-opening" maskUnits="userSpaceOnUse" x="30" y="100" width="321" height="181">
+        <use href="#eye-lid-shape" fill="white"></use>
+      </mask>
       <pattern
-        id="eye-pattern-left"
+        id="eye-pattern"
         patternUnits="userSpaceOnUse"
-        patternTransform="matrix(-3.08253e-05 -705.2 30.8239 -1.34735e-06 43 315)"
+        patternTransform="matrix(846.24 0 0 36.9886 30 98.8)"
         preserveAspectRatio="none"
         viewBox="0 -1 705.2 30.8239"
         width="1"
         height="1"
       >
-        <use href="#eye-pattern-left-inner" transform="translate(0 -30.8239)"></use>
-        <g id="eye-pattern-left-inner">
-          <path
-            class="eye-texture"
-            d="M0 0C16.0273 0 16.0273 30.8239 32.0545 30.8239C48.0818 30.8239 48.0818 0 64.1091 0C80.1364 0 80.1364 30.8239 96.1636 30.8239C112.191 30.8239 112.191 0 128.218 0C144.245 0 144.245 30.8239 160.273 30.8239C176.3 30.8239 176.3 0 192.327 0C208.355 0 208.355 30.8239 224.382 30.8239C240.409 30.8239 240.409 0 256.436 0C272.464 0 272.464 30.8239 288.491 30.8239C304.518 30.8239 304.518 0 320.545 0C336.573 0 336.573 30.8239 352.6 30.8239C368.627 30.8239 368.627 0 384.655 0C400.682 0 400.682 30.8239 416.709 30.8239C432.736 30.8239 432.736 0 448.764 0C464.791 0 464.791 30.8239 480.818 30.8239C496.845 30.8239 496.845 0 512.873 0C528.9 0 528.9 30.8239 544.927 30.8239C560.955 30.8239 560.955 0 576.982 0C593.009 0 593.009 30.8239 609.036 30.8239C625.064 30.8239 625.064 0 641.091 0C657.118 0 657.118 30.8239 673.145 30.8239C689.173 30.8239 689.173 0 705.2 0"
-            stroke-width="2"
-            stroke-miterlimit="10"
-          ></path>
-        </g>
-      </pattern>
-      <pattern
-        id="eye-pattern-right"
-        patternUnits="userSpaceOnUse"
-        patternTransform="matrix(-3.08253e-05 -705.2 30.8239 -1.34735e-06 193 315)"
-        preserveAspectRatio="none"
-        viewBox="0 -1 705.2 30.8239"
-        width="1"
-        height="1"
-      >
-        <use href="#eye-pattern-right-inner" transform="translate(0 -30.8239)"></use>
-        <g id="eye-pattern-right-inner">
+        <use href="#eye-pattern-inner" transform="translate(0 -30.8239)"></use>
+        <g id="eye-pattern-inner">
           <path
             class="eye-texture"
             d="M0 0C16.0273 0 16.0273 30.8239 32.0545 30.8239C48.0818 30.8239 48.0818 0 64.1091 0C80.1364 0 80.1364 30.8239 96.1636 30.8239C112.191 30.8239 112.191 0 128.218 0C144.245 0 144.245 30.8239 160.273 30.8239C176.3 30.8239 176.3 0 192.327 0C208.355 0 208.355 30.8239 224.382 30.8239C240.409 30.8239 240.409 0 256.436 0C272.464 0 272.464 30.8239 288.491 30.8239C304.518 30.8239 304.518 0 320.545 0C336.573 0 336.573 30.8239 352.6 30.8239C368.627 30.8239 368.627 0 384.655 0C400.682 0 400.682 30.8239 416.709 30.8239C432.736 30.8239 432.736 0 448.764 0C464.791 0 464.791 30.8239 480.818 30.8239C496.845 30.8239 496.845 0 512.873 0C528.9 0 528.9 30.8239 544.927 30.8239C560.955 30.8239 560.955 0 576.982 0C593.009 0 593.009 30.8239 609.036 30.8239C625.064 30.8239 625.064 0 641.091 0C657.118 0 657.118 30.8239 673.145 30.8239C689.173 30.8239 689.173 0 705.2 0"
@@ -199,14 +143,18 @@
       position: absolute;
       inset: 0;
       display: block;
-      width: 68px;
-      height: 68px;
+      width: 72px;
+      height: 72px;
       margin: auto;
       overflow: visible;
       pointer-events: none;
       opacity: 0;
       color: currentColor;
       transform-origin: center center;
+    }
+
+    .custom-cursor__eye .eye-ball {
+      will-change: transform;
     }
 
     /* Contour strokes share the cursor ring: currentColor + --border-w (2px). */
@@ -279,17 +227,46 @@
 <script>
   const root = document.documentElement;
   const cursor = document.querySelector("[data-custom-cursor]");
+  const eyeBall = document.querySelector("[data-eye-ball]");
   const finePointer = window.matchMedia("(pointer: fine)");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const hoverTarget =
     "a[href], button, summary, label, [role='button'], [role='link'], [data-open-project], [data-detail-close]";
 
-  const hoveringInteractive = (target: EventTarget | null) => {
-    if (!(target instanceof Element)) return false;
+  /** ViewBox units: horizontal travel is larger than vertical. */
+  const LOOK_MAX_X = 34;
+  const LOOK_MAX_Y = 18;
+  /** Pointer distance (px) that maps to full look travel. */
+  const LOOK_REF_PX = 140;
+  const LOOK_EASE = 0.2;
+
+  const resolveInteractive = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return null;
     const el = target.closest(hoverTarget);
-    if (!(el instanceof HTMLElement)) return false;
-    if ("disabled" in el && Boolean((el as HTMLButtonElement).disabled)) return false;
-    if (el.getAttribute("aria-disabled") === "true") return false;
-    return true;
+    if (!(el instanceof HTMLElement)) return null;
+    if ("disabled" in el && Boolean((el as HTMLButtonElement).disabled)) return null;
+    if (el.getAttribute("aria-disabled") === "true") return null;
+    return el;
+  };
+
+  const resolveAimTarget = (interactive: HTMLElement) => {
+    const cell = interactive.closest(".cell");
+    if (cell instanceof HTMLElement) {
+      const media = cell.querySelector(".cell__media");
+      if (media instanceof HTMLElement) return media;
+    }
+    return interactive;
+  };
+
+  const clampLook = (dx: number, dy: number) => {
+    const nx = dx / LOOK_REF_PX;
+    const ny = dy / LOOK_REF_PX;
+    const len = Math.hypot(nx, ny);
+    if (len <= 1 || len === 0) {
+      return { x: nx * LOOK_MAX_X, y: ny * LOOK_MAX_Y };
+    }
+    const scale = 1 / len;
+    return { x: nx * scale * LOOK_MAX_X, y: ny * scale * LOOK_MAX_Y };
   };
 
   if (cursor instanceof HTMLElement && finePointer.matches) {
@@ -297,6 +274,10 @@
 
     let x = -100;
     let y = -100;
+    let lookX = 0;
+    let lookY = 0;
+    let targetLookX = 0;
+    let targetLookY = 0;
     let raf = 0;
 
     const promote = () => {
@@ -313,24 +294,70 @@
       }
     };
 
+    const applyLook = () => {
+      if (!(eyeBall instanceof SVGGElement)) return;
+      eyeBall.setAttribute("transform", `translate(${lookX} ${lookY})`);
+    };
+
     const render = () => {
       cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      raf = 0;
+
+      if (reducedMotion.matches) {
+        lookX = targetLookX;
+        lookY = targetLookY;
+      } else {
+        lookX += (targetLookX - lookX) * LOOK_EASE;
+        lookY += (targetLookY - lookY) * LOOK_EASE;
+      }
+      applyLook();
+
+      const settling =
+        Math.abs(targetLookX - lookX) > 0.05 || Math.abs(targetLookY - lookY) > 0.05;
+      raf = settling ? requestAnimationFrame(render) : 0;
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(render);
+    };
+
+    const setLookFromPointer = (
+      pointerX: number,
+      pointerY: number,
+      interactive: HTMLElement | null,
+    ) => {
+      if (!interactive) {
+        targetLookX = 0;
+        targetLookY = 0;
+        return;
+      }
+      const aim = resolveAimTarget(interactive);
+      const rect = aim.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const next = clampLook(cx - pointerX, cy - pointerY);
+      targetLookX = next.x;
+      targetLookY = next.y;
     };
 
     const onMove = (event: PointerEvent) => {
       x = event.clientX;
       y = event.clientY;
+      const interactive = resolveInteractive(event.target);
       cursor.classList.add("is-visible");
-      cursor.classList.toggle("is-hover", hoveringInteractive(event.target));
-      if (!raf) raf = requestAnimationFrame(render);
+      cursor.classList.toggle("is-hover", Boolean(interactive));
+      setLookFromPointer(event.clientX, event.clientY, interactive);
+      schedule();
     };
 
     const onLeave = () => {
       cursor.classList.remove("is-visible", "is-hover");
+      targetLookX = 0;
+      targetLookY = 0;
+      schedule();
     };
 
     promote();
+    applyLook();
 
     // After any modal dialog opens, re-enter the top layer above it.
     document.addEventListener(
