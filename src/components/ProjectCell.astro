@@ -178,8 +178,13 @@ const titleLabel = titleLines.join(" ");
     width: min(100%, 720px);
     aspect-ratio: 1 / 1;
     margin-inline: auto;
-    /* Black plate behind alpha video (and idle overlay) */
-    background: #050505;
+    border: var(--border);
+    /* Wave field behind alpha video — same tile as the hero collage */
+    background-color: var(--lime);
+    background-image: url("/images/figma/wave-vector.svg");
+    background-size: 356.7px 23.12px;
+    background-repeat: repeat;
+    background-position: 0 0;
   }
 
   .cell__media--video video {
