@@ -96,7 +96,6 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
        shorter than the type on mid-wide screens, so Cilati ascenders and
        descenders clipped against overflow:hidden. */
     --marquee-size: var(--text-banner);
-    --marquee-fade: clamp(2rem, 6vw, 5rem);
     position: relative;
     min-height: calc(var(--marquee-size) * 1.35);
     display: flex;
@@ -118,21 +117,6 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
   .marquee__viewport {
     width: 100%;
     overflow: hidden;
-    /* Soft edges so letters aren't hard-sliced by the frame border. */
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 var(--marquee-fade),
-      #000 calc(100% - var(--marquee-fade)),
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 var(--marquee-fade),
-      #000 calc(100% - var(--marquee-fade)),
-      transparent 100%
-    );
   }
 
   .marquee__track {
@@ -184,21 +168,6 @@ const headingText = items.join(" ").replace(/\u00A0/g, " ");
   @media (prefers-reduced-motion: reduce) {
     .marquee__track {
       animation: none;
-    }
-
-    .marquee__viewport {
-      -webkit-mask-image: linear-gradient(
-        to right,
-        #000 0,
-        #000 calc(100% - var(--marquee-fade)),
-        transparent 100%
-      );
-      mask-image: linear-gradient(
-        to right,
-        #000 0,
-        #000 calc(100% - var(--marquee-fade)),
-        transparent 100%
-      );
     }
   }
 </style>
