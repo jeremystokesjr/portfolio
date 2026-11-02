@@ -55,8 +55,10 @@ import "../styles/global.css";
           <Intro />
           <MarqueeBanner items={site.workItems} label="Work" />
           <ProjectGrid />
-          <MarqueeBanner items={site.aboutItems} label="About" />
-          <AboutMosaic />
+          <div class="about-block">
+            <MarqueeBanner items={site.aboutItems} label="About" />
+            <AboutMosaic />
+          </div>
           <Footer />
         </main>
       </div>
@@ -64,3 +66,11 @@ import "../styles/global.css";
     <ProjectDetailOverlay />
   </body>
 </html>
+
+<style>
+  @media (max-width: 900px) {
+    .about-block {
+      display: none;
+    }
+  }
+</style>

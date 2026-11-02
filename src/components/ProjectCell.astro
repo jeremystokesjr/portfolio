@@ -155,12 +155,21 @@ const titleLabel = titleLines.join(" ");
     transition: opacity 0.45s ease;
   }
 
-  .cell:hover .cell__media img,
   .cell:focus-visible .cell__media img,
-  .cell:hover .cell__media video,
-  .cell:focus-visible .cell__media video {
+  .cell:focus-visible .cell__media video,
+  .cell.is-playing .cell__media img,
+  .cell.is-playing .cell__media video {
     filter: grayscale(0);
     transform: scale(1.03);
+  }
+
+  /* Desktop hover only — touch / mobile cards play from scroll instead */
+  @media (hover: hover) and (min-width: 901px) {
+    .cell:hover .cell__media img,
+    .cell:hover .cell__media video {
+      filter: grayscale(0);
+      transform: scale(1.03);
+    }
   }
 
   /* Full frame of the prototype, including the device bezels */
@@ -199,25 +208,35 @@ const titleLabel = titleLines.join(" ");
     display: none;
   }
 
-  .cell:hover .cell__media--video video,
-  .cell:focus-within .cell__media--video video {
+  .cell:focus-within .cell__media--video video,
+  .cell.is-playing .cell__media--video video {
     filter: none;
     transform: none;
   }
 
   /* Match JS hover play: only clear overlay on real hover (not sticky touch) */
-  @media (hover: hover) {
+  @media (hover: hover) and (min-width: 901px) {
+    .cell:hover .cell__media--video video {
+      filter: none;
+      transform: none;
+    }
+
     .cell:hover .cell__video-veil {
+      opacity: 0;
+    }
+
+    .cell:hover .cell__duotone {
       opacity: 0;
     }
   }
 
-  .cell:focus-within .cell__video-veil {
+  .cell:focus-within .cell__video-veil,
+  .cell.is-playing .cell__video-veil {
     opacity: 0;
   }
 
-  .cell:hover .cell__duotone,
-  .cell:focus-visible .cell__duotone {
+  .cell:focus-visible .cell__duotone,
+  .cell.is-playing .cell__duotone {
     opacity: 0;
   }
 
@@ -250,15 +269,24 @@ const titleLabel = titleLines.join(" ");
     .cell:hover .cell__media img,
     .cell:focus-visible .cell__media img,
     .cell:hover .cell__media video,
-    .cell:focus-visible .cell__media video {
+    .cell:focus-visible .cell__media video,
+    .cell.is-playing .cell__media img,
+    .cell.is-playing .cell__media video {
       transform: none;
     }
   }
 
   @media (max-width: 900px) {
-    .cell {
+    .cell,
+    .cell--title-first {
+      flex-direction: column;
+      justify-content: flex-start;
       gap: 24px;
       min-height: 0;
+    }
+
+    .cell--title-first .cell__rule {
+      order: 0;
     }
   }
 </style>
@@ -274,13 +302,30 @@ const titleLabel = titleLines.join(" ");
     return window.matchMedia("(hover: hover)").matches;
   }
 
+  function isMobileLayout() {
+    return window.matchMedia("(max-width: 900px)").matches;
+  }
+
+  function playsOnScroll() {
+    return !canHover() || isMobileLayout();
+  }
+
   function cellFromVideo(video) {
     return video.closest(".cell");
+  }
+
+  function cellIsInViewport(cell) {
+    if (!(cell instanceof HTMLElement)) return false;
+    const rect = cell.getBoundingClientRect();
+    const viewH = window.innerHeight || 1;
+    const visible = Math.min(rect.bottom, viewH) - Math.max(rect.top, 0);
+    return visible / Math.max(rect.height, 1) >= 0.4;
   }
 
   function cellIsActive(cell) {
     if (!(cell instanceof HTMLElement)) return false;
     if (cell.matches(":focus-within")) return true;
+    if (playsOnScroll()) return cellIsInViewport(cell);
     // Avoid sticky-hover playback on touch devices
     return canHover() && cell.matches(":hover");
   }
@@ -293,13 +338,21 @@ const titleLabel = titleLines.join(" ");
     );
   }
 
+  function setCellPlaying(cell, playing) {
+    if (!(cell instanceof HTMLElement)) return;
+    cell.classList.toggle("is-playing", playing);
+  }
+
   function syncCellVideo(video) {
     if (!(video instanceof HTMLVideoElement)) return;
+    const cell = cellFromVideo(video);
     if (cellVideoShouldPlay(video)) {
       attachAlphaSource(video);
+      setCellPlaying(cell, true);
       video.play()?.catch(() => {});
       return;
     }
+    setCellPlaying(cell, false);
     video.pause();
     try {
       if (video.currentTime !== 0) video.currentTime = 0;
@@ -344,17 +397,22 @@ const titleLabel = titleLines.join(" ");
     if (!videos.length) return;
 
     if (!cellVideoObserver) {
-      // Prep sources near the viewport so hover can play promptly; never autoplay from visibility
+      // Attach sources near the viewport so hover can play promptly.
+      // On mobile / no-hover, play once a meaningful slice of the card is visible.
       cellVideoObserver = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             const video = entry.target;
             if (!(video instanceof HTMLVideoElement)) continue;
+            const cell = cellFromVideo(video);
+            if (cell instanceof HTMLElement) {
+              cell.dataset.inView = cellIsInViewport(cell) ? "1" : "0";
+            }
             if (entry.isIntersecting) attachAlphaSource(video);
             syncCellVideo(video);
           }
         },
-        { threshold: 0.2, rootMargin: "80px" },
+        { threshold: [0, 0.4], rootMargin: "80px" },
       );
 
       const sheet = new MutationObserver(() => {
@@ -366,6 +424,29 @@ const titleLabel = titleLines.join(" ");
         attributes: true,
         attributeFilter: ["class"],
       });
+
+      const syncAll = () => {
+        document.querySelectorAll("[data-cell-video]").forEach((video) => {
+          if (video instanceof HTMLVideoElement) syncCellVideo(video);
+        });
+      };
+      window.matchMedia("(hover: hover)").addEventListener("change", syncAll);
+      window
+        .matchMedia("(max-width: 900px)")
+        .addEventListener("change", syncAll);
+
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          if (!playsOnScroll()) return;
+          syncAll();
+        });
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
     }
 
     videos.forEach((video) => {
